@@ -1,58 +1,41 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-type Language = 'zh' | 'en';
+type Language = 'zh';
 
 interface LanguageContextType {
   language: Language;
-  setLanguage: (lang: Language) => void;
   t: (key: string) => string;
 }
 
 const translations = {
   zh: {
-    'app.name': 'InnerSpace',
-    'nav.tests': '测评',
-    'nav.about': '关于',
-    'nav.resources': '资源',
-    'nav.start': '开始体验',
-    'hero.tag': '专业心理测评',
-    'hero.title.1': '探索内心，',
-    'hero.title.2': '遇见更好的自己',
-    'hero.desc': '专业的心理学工具，助你在纷繁复杂的世界中通过自我探索，获得内心的平静与力量。',
-    'hero.button': '探索测评',
-    'tests.title': '精选测评',
-    'tests.count': '个测评可用',
-    'tests.start': '开始测试',
+    'app.name': 'KBubble',
+    'nav.tests': '趣味测评',
+    'nav.about': '关于我们',
+    'nav.resources': '更多好玩',
+    'nav.start': '开始探索',
+    'hero.tag': '✨时尚者的自我探索指南',
+    'hero.title.1': '心之所隐，',
+    'hero.title.2': ' 皆为答案',
+    'hero.desc': '',
+    'hero.button': '开启探索',
+    'tests.title': '热门测试',
+    'tests.count': '个测试在线',
+    'tests.start': '去测测',
     'tests.duration': '分钟',
-    'test.back': '返回列表',
-    'test.question': '问题',
-    'result.label': '测试结果',
-    'result.retry': '重新测试',
-    'result.home': '返回首页',
-    'result.disclaimer': '本测评结果仅供参考，不构成医疗建议。',
-    'footer.rights': '© 2024 InnerSpace. 保留所有权利。',
-  },
-  en: {
-    'app.name': 'InnerSpace',
-    'nav.tests': 'Tests',
-    'nav.about': 'About',
-    'nav.resources': 'Resources',
-    'nav.start': 'Get Started',
-    'hero.tag': 'Science-backed assessments',
-    'hero.title.1': 'Understand your mind,',
-    'hero.title.2': 'unlock your potential',
-    'hero.desc': 'Professional psychological tools to help you gain clarity, reduce stress, and build resilience in a complex world.',
-    'hero.button': 'Explore Tests',
-    'tests.title': 'Available Assessments',
-    'tests.count': 'tests available',
-    'tests.start': 'Start',
-    'tests.duration': 'min',
-    'test.back': 'Back to tests',
-    'test.question': 'Question',
-    'result.label': 'Your Result',
-    'result.retry': 'Retake Test',
-    'result.home': 'Back to Home',
-    'result.disclaimer': 'This assessment is for informational purposes only and does not constitute medical advice.',
+    'test.back': '返回',
+    'test.question': '第',
+    'test.question_suffix': '题',
+    'test.prev': '上一题',
+    'intro.title': '测试说明',
+    'intro.start': '开始测试',
+    'intro.duration': '预计用时',
+    'intro.count': '题目数量',
+    'intro.tips': '温馨提示',
+    'result.label': '你的天选女团',
+    'result.retry': '再测一次',
+    'result.home': '更多测试',
+    'result.disclaimer': '测试结果仅供娱乐参考，保持开心最重要！',
     'footer.rights': '© 2024 InnerSpace. All rights reserved.',
   }
 };
@@ -60,14 +43,14 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('zh');
+  const language: Language = 'zh';
 
   const t = (key: string) => {
-    return translations[language][key as keyof typeof translations['zh']] || key;
+    return translations['zh'][key as keyof typeof translations['zh']] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, t }}>
       {children}
     </LanguageContext.Provider>
   );

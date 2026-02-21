@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, ChevronLeft } from "lucide-react";
 import { Test } from "../data/tests";
 import { cn } from "../lib/utils";
 import { useLanguage } from "../contexts/LanguageContext";
 
 interface TestTakerProps {
   test: Test;
-  onComplete: (score: number) => void;
+  onComplete: (answers: Record<string, number>) => void;
   onCancel: () => void;
 }
 
@@ -20,6 +20,11 @@ export function TestTaker({ test, onComplete, onCancel }: TestTakerProps) {
   const currentQuestion = test.questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / test.questions.length) * 100;
 
+  // Shuffle options when currentQuestion changes
+  const shuffledOptions = useMemo(() => {
+    return [...currentQuestion.options].sort(() => Math.random() - 0.5);
+  }, [currentQuestion]);
+
   const handleAnswer = (value: number) => {
     setAnswers(prev => ({ ...prev, [currentQuestion.id]: value }));
     
@@ -27,22 +32,40 @@ export function TestTaker({ test, onComplete, onCancel }: TestTakerProps) {
       setDirection(1);
       setTimeout(() => setCurrentQuestionIndex(prev => prev + 1), 250);
     } else {
-      // Calculate score
+      // Pass full answers object
       const finalAnswers = { ...answers, [currentQuestion.id]: value };
-      const totalScore = Object.values(finalAnswers).reduce((a: number, b: number) => a + b, 0);
-      onComplete(totalScore);
+      onComplete(finalAnswers);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setDirection(-1);
+      setCurrentQuestionIndex(prev => prev - 1);
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto py-12">
-      <button 
-        onClick={onCancel}
-        className="mb-8 flex items-center gap-2 text-neutral-400 hover:text-neutral-900 transition-colors font-medium text-sm"
-      >
-        <ArrowLeft size={16} />
-        {t('test.back')}
-      </button>
+      <div className="flex items-center justify-between mb-8">
+        <button 
+          onClick={onCancel}
+          className="flex items-center gap-2 text-neutral-400 hover:text-neutral-900 transition-colors font-medium text-sm"
+        >
+          <ArrowLeft size={16} />
+          {t('test.back')}
+        </button>
+
+        {currentQuestionIndex > 0 && (
+          <button 
+            onClick={handlePrevious}
+            className="flex items-center gap-2 text-pink-500 hover:text-pink-600 transition-colors font-bold text-sm"
+          >
+            <ChevronLeft size={16} />
+            {t('test.prev')}
+          </button>
+        )}
+      </div>
 
       <div className="mb-10">
         <div className="flex justify-between text-xs font-bold text-neutral-400 uppercase tracking-wider mb-3">
@@ -74,7 +97,7 @@ export function TestTaker({ test, onComplete, onCancel }: TestTakerProps) {
           </h2>
 
           <div className="space-y-4">
-            {currentQuestion.options.map((option, idx) => (
+            {shuffledOptions.map((option, idx) => (
               <button
                 key={idx}
                 onClick={() => handleAnswer(option.value)}

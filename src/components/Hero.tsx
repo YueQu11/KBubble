@@ -29,10 +29,6 @@ export function Hero({ onStart }: HeroProps) {
           </span>
         </h1>
         
-        <p className="text-lg md:text-xl text-neutral-500 max-w-2xl mx-auto leading-relaxed font-medium">
-          {t('hero.desc')}
-        </p>
-
         <div className="pt-4">
           <button 
             onClick={onStart}

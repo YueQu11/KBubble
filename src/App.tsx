@@ -9,23 +9,22 @@ import { Hero } from "./components/Hero";
 import { TestCard } from "./components/TestCard";
 import { TestTaker } from "./components/TestTaker";
 import { ResultCard } from "./components/ResultCard";
+import { TestIntro } from "./components/TestIntro";
 import { getTests, Test } from "./data/tests";
 import { motion, AnimatePresence } from "motion/react";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 
-type ViewState = "home" | "test" | "result";
+type ViewState = "home" | "intro" | "test" | "result";
 
 function AppContent() {
   const [view, setView] = useState<ViewState>("home");
   const [activeTest, setActiveTest] = useState<Test | null>(null);
-  const [score, setScore] = useState<number>(0);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
   const { language, t } = useLanguage();
   
   const tests = getTests(language);
 
   // Reset active test when language changes if we are on home screen
-  // If in test, we might want to warn or just switch (switching might lose progress if questions differ order/count, but here they map 1:1)
-  // For simplicity, if language changes, we just reload the current test data if active
   useEffect(() => {
     if (activeTest) {
       const updatedTest = tests.find(t => t.id === activeTest.id);
@@ -35,17 +34,22 @@ function AppContent() {
     }
   }, [language, tests]);
 
-  const handleStartTest = (testId: string) => {
+  const handleSelectTest = (testId: string) => {
     const test = tests.find((t) => t.id === testId);
     if (test) {
       setActiveTest(test);
-      setView("test");
+      setView("intro");
       window.scrollTo(0, 0);
     }
   };
 
-  const handleCompleteTest = (finalScore: number) => {
-    setScore(finalScore);
+  const handleStartTest = () => {
+    setView("test");
+    window.scrollTo(0, 0);
+  };
+
+  const handleCompleteTest = (finalAnswers: Record<string, number>) => {
+    setAnswers(finalAnswers);
     setView("result");
     window.scrollTo(0, 0);
   };
@@ -54,7 +58,7 @@ function AppContent() {
     if (target === "home") {
       setView("home");
       setActiveTest(null);
-      setScore(0);
+      setAnswers({});
     }
   };
 
@@ -85,12 +89,28 @@ function AppContent() {
                   <TestCard 
                     key={test.id} 
                     test={test} 
-                    onSelect={handleStartTest} 
+                    onSelect={handleSelectTest} 
                     index={index}
                   />
                 ))}
               </div>
             </div>
+          </motion.div>
+        )}
+
+        {view === "intro" && activeTest && (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <TestIntro 
+              test={activeTest} 
+              onStart={handleStartTest}
+              onBack={() => handleNavigate("home")}
+            />
           </motion.div>
         )}
 
@@ -120,8 +140,8 @@ function AppContent() {
           >
             <ResultCard 
               test={activeTest} 
-              score={score} 
-              onRetry={() => setView("test")}
+              answers={answers} 
+              onRetry={() => setView("intro")}
               onHome={() => handleNavigate("home")}
             />
           </motion.div>
