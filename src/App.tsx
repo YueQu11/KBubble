@@ -10,6 +10,7 @@ import { TestCard } from "./components/TestCard";
 import { TestTaker } from "./components/TestTaker";
 import { ResultCard } from "./components/ResultCard";
 import { TestIntro } from "./components/TestIntro";
+import { KeyVerificationModal } from "./components/KeyVerificationModal";
 import { getTests, Test } from "./data/tests";
 import { motion, AnimatePresence } from "motion/react";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
@@ -20,9 +21,22 @@ function AppContent() {
   const [view, setView] = useState<ViewState>("home");
   const [activeTest, setActiveTest] = useState<Test | null>(null);
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [unlockedTests, setUnlockedTests] = useState<string[]>([]);
+  const [showKeyModal, setShowKeyModal] = useState(false);
   const { language, t } = useLanguage();
   
   const tests = getTests(language);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('unlockedTests');
+    if (saved) {
+      try {
+        setUnlockedTests(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse unlocked tests", e);
+      }
+    }
+  }, []);
 
   // Reset active test when language changes if we are on home screen
   useEffect(() => {
@@ -44,8 +58,25 @@ function AppContent() {
   };
 
   const handleStartTest = () => {
-    setView("test");
-    window.scrollTo(0, 0);
+    if (!activeTest) return;
+
+    if (unlockedTests.includes(activeTest.id)) {
+      setView("test");
+      window.scrollTo(0, 0);
+    } else {
+      setShowKeyModal(true);
+    }
+  };
+
+  const handleKeyVerified = () => {
+    if (activeTest) {
+      const newUnlocked = [...unlockedTests, activeTest.id];
+      setUnlockedTests(newUnlocked);
+      localStorage.setItem('unlockedTests', JSON.stringify(newUnlocked));
+      setShowKeyModal(false);
+      setView("test");
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleCompleteTest = (finalAnswers: Record<string, number>) => {
@@ -147,6 +178,16 @@ function AppContent() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {activeTest && (
+        <KeyVerificationModal
+          isOpen={showKeyModal}
+          testId={activeTest.id}
+          testTitle={activeTest.title}
+          onClose={() => setShowKeyModal(false)}
+          onVerified={handleKeyVerified}
+        />
+      )}
     </Layout>
   );
 }

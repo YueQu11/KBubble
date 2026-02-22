@@ -16,37 +16,43 @@ export interface Test {
   category: "Personality" | "Fun" | "Vibe" | "个性" | "趣味" | "氛围";
   duration: string;
   questions: Question[];
-  scoring: (answers: Record<string, number>) => { level: string; description: string; image?: string };
+  resultLabel?: string;
+  scoring: (answers: Record<string, number>) => { level: string; description: string; image?: string; quote?: string };
 }
 
 // Helper to calculate result based on frequency
-const getDominantValue = (answers: Record<string, number>): number => {
+const getDominantValues = (answers: Record<string, number>): number[] => {
   const counts: Record<number, number> = {};
   Object.values(answers).forEach(val => {
     counts[val] = (counts[val] || 0) + 1;
   });
   
   let maxCount = 0;
-  let dominantVal = 1; // Default to 1
   
-  Object.entries(counts).forEach(([val, count]) => {
+  Object.values(counts).forEach(count => {
     if (count > maxCount) {
       maxCount = count;
-      dominantVal = Number(val);
+    }
+  });
+
+  const dominantVals: number[] = [];
+  Object.entries(counts).forEach(([val, count]) => {
+    if (count === maxCount) {
+      dominantVals.push(Number(val));
     }
   });
   
-  return dominantVal;
+  return dominantVals.length > 0 ? dominantVals : [1];
 };
 
 const testsZh: Test[] = [
   {
-    id: "kpop-group",
-    title: "测一测谁是你的天选K-pop女团？",
-    description: "你是人间香奈儿，还是自信千金？是元气甜心，还是旷野战士？10道题揭秘你的女团本命！",
+    id: "kpop-chosengroup1",
+    title: "谁是你的天选Kpop女团？",
+    description: "C位出道的机会摆在你的面前！成为人间香奈儿，还是自信千金？化身元气甜心，还是旷野战士？10道题揭秘你的女团本命！",
     coverImage: "https://s41.ax1x.com/2026/02/21/pZjZgFs.png",
     instructions: [
-      "想象你是一位即将出道的练习生。",
+      "想象你是一位即将出道的练习生，选择权就握在你的手中。",
       "凭直觉选择最符合你风格的选项。",
       "不要犹豫，展现最真实的自己！"
     ],
@@ -88,13 +94,13 @@ const testsZh: Test[] = [
       },
       {
         id: "q4",
-        text: "哪句歌词最能代表你的心声？",
+        text: "你会把全球巡演的第一站选在哪个城市？",
         options: [
-          { text: "Look at you, now look at me. ", value: 1 }, // BP
-          { text: "I love myself. ", value: 2 }, // IVE
-          { text: "Cheer up baby! ", value: 3 }, // TWICE
-          { text: "I'm on the next level. ", value: 4 }, // aespa
-          { text: "I'm a Queencard. ", value: 5 }, // IDLE
+          { text: "巴黎：在时尚之都，开启一场奢华的视听盛宴。", value: 1 }, // BP
+          { text: "首尔：在K-pop中心，展现最精致完美的千金舞台。", value: 2 }, // IVE
+          { text: "东京：在巨蛋的粉色灯海中，与粉丝元气互动。", value: 3 }, // TWICE
+          { text: "纽约：在时代广场的霓虹下，连接现实与虚拟世界。", value: 4 }, // aespa
+          { text: "伦敦：在充满艺术气息的街头，释放自由不羁的灵魂。", value: 5 }, // IDLE
         ],
       },
       {
@@ -165,7 +171,10 @@ const testsZh: Test[] = [
       },
     ],
     scoring: (answers) => {
-      const result = getDominantValue(answers);
+      const dominantValues = getDominantValues(answers);
+      // If tie, pick random from winners
+      const result = dominantValues[Math.floor(Math.random() * dominantValues.length)];
+      
       if (result === 1) return { 
         level: "BLACKPINK", 
         description: "你是天生的主角！你拥有令人羡慕的自信和气场，既能驾驭奢华时尚，又能slay全场。你的存在本身就是一种态度，注定要成为世界级的Icon。",
@@ -191,6 +200,154 @@ const testsZh: Test[] = [
         description: "你是概念女王！你直率、大胆，拥有独立的灵魂。你不愿做被包装的玩偶，而是要亲自操刀定义自己。你用实力打破偏见，是真正的Queencard。",
         image: "https://s3.imagency.cn/e/19d7871892961288d2afdd6a88772b76.jpg"
       };
+    },
+  },
+  {
+    id: "kpop-5generationtop",
+    title: "谁是你潜意识pick的五女一？",
+    description: "柳智敏还是张元英？结束这场纷争吧！10道潜意识测试，揭秘你内心深处认定的五女一人选！",
+    coverImage: "https://s3.imagency.cn/e/e305007d43d63cfde6038b43ce829e59.png",
+    resultLabel: "你pick的五女一",
+    instructions: [
+      "凭直觉快速选择，不要思考太久或揣测题目意图。",
+      "想象这些场景真实发生在你眼前。",
+      "答案没有对错，只有你内心的选择。"
+    ],
+    category: "趣味",
+    duration: "3 分钟",
+    questions: [
+      {
+        id: "q1",
+        text: "第一眼看到一张神图，你更倾向于被哪种特质吸引？",
+        options: [
+          { text: "精致如CG般的不真实感，仿佛来自未来。", value: 1 }, // Karina
+          { text: "明艳动人，充满生机与灵气的千金感。", value: 2 }, // Wonyoung
+          { text: "清冷孤傲，如同高岭之花般难以接近。", value: 3 }, // Karina
+          { text: "甜美可人，像童话里走出的洋娃娃。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q2",
+        text: "你认为什么样的舞台瞬间最能击中人心？",
+        options: [
+          { text: "爆发力十足，每一个动作都精准卡点的瞬间。", value: 1 }, // Karina
+          { text: "表情生动，眼神流转间摄人心魄的瞬间。", value: 2 }, // Wonyoung
+          { text: "气场全开，仿佛掌控全场的女王降临。", value: 3 }, // Karina
+          { text: "每一个发丝都在跳舞，连指尖都充满戏。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q3",
+        text: "在一段关系中，你更倾向于成为哪种角色？",
+        options: [
+          { text: "让人捉摸不透，充满神秘吸引力的掌控者。", value: 1 }, // Karina
+          { text: "备受宠爱，永远能激发保护欲的焦点。", value: 2 }, // Wonyoung
+          { text: "外冷内热，只对特定的人展现温柔。", value: 3 }, // Karina
+          { text: "自信闪耀，让对方时刻为你着迷。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q4",
+        text: "你更欣赏哪种“美”的质感？",
+        options: [
+          { text: "哑光、高级，像精雕细琢的艺术品。", value: 1 }, // Karina
+          { text: "水光、通透，像清晨沾着露水的花瓣。", value: 2 }, // Wonyoung
+          { text: "冷冽、锋利，带有未来科技感的金属光泽。", value: 3 }, // Karina
+          { text: "粉嫩、柔软，带有梦幻色彩的棉花糖质感。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q5",
+        text: "在团队合作中，你通常会承担什么样的责任？",
+        options: [
+          { text: "默默照顾所有人，成为团队的精神支柱。", value: 1 }, // Karina
+          { text: "积极展现自我，成为团队的对外门面。", value: 2 }, // Wonyoung
+          { text: "用实力说话，关键时刻挺身而出的ACE。", value: 3 }, // Karina
+          { text: "调节气氛，让大家都关注到团队亮点的中心。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q6",
+        text: "周末的夜晚，你更想去哪里？",
+        options: [
+          { text: "充满科技感的艺术展或地下Livehouse。", value: 1 }, // Karina
+          { text: "高级酒店的顶层露台或精致的私人派对。", value: 2 }, // Wonyoung
+          { text: "一个人在深夜的城市街道漫步，享受孤独。", value: 3 }, // Karina
+          { text: "和闺蜜们去网红餐厅打卡，拍美美的照片。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q7",
+        text: "如果可以拥有一种超能力，你希望是？",
+        options: [
+          { text: "瞬间移动，穿梭于现实与虚拟之间。", value: 1 }, // Karina
+          { text: "时间静止，永远停留在最美的瞬间。", value: 2 }, // Wonyoung
+          { text: "读心术，看穿每个人内心深处的想法。", value: 3 }, // Karina
+          { text: "魅惑术，让所有人都无法抗拒你的魅力。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q8",
+        text: "你认为真正的强大来源于？",
+        options: [
+          { text: "温柔的包容力，以及私下里不经意流露的脆弱感。", value: 1 }, // Karina
+          { text: "极致的自律，以及无论何时都保持完美的意志力。", value: 2 }, // Wonyoung
+          { text: "面对非议时，依然坚持自我的勇气。", value: 3 }, // Karina
+          { text: "无论跌倒多少次，都能笑着站起来的韧性。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q9",
+        text: "如果必须选择一种颜色作为你的代表色，你会选？",
+        options: [
+          { text: "深邃的紫。", value: 1 }, // Karina
+          { text: "热烈的粉。", value: 2 }, // Wonyoung
+          { text: "冷冽的银。", value: 3 }, // Karina
+          { text: "纯净的白。", value: 4 }, // Wonyoung
+        ],
+      },
+      {
+        id: "q10",
+        text: "你心目中理想的“偶像”形态是？",
+        options: [
+          { text: "打破次元壁，拥有超越现实的完美与梦幻。", value: 1 }, // Karina
+          { text: "天生明星，将自身的魅力发挥到极致。", value: 2 }, // Wonyoung
+          { text: "引领潮流，创造属于自己独特世界观的先锋。", value: 3 }, // Karina
+          { text: "完美无瑕，满足大众对美好一切幻想的化身。", value: 4 }, // Wonyoung
+        ],
+      },
+    ],
+    scoring: (answers) => {
+      let karinaScore = 0;
+      let wonyoungScore = 0;
+
+      Object.values(answers).forEach((val) => {
+        if (val === 1 || val === 3) karinaScore++;
+        else if (val === 2 || val === 4) wonyoungScore++;
+      });
+
+      if (karinaScore > wonyoungScore + 1) {
+        return {
+          level: "柳智敏 (Karina)",
+          description: "在你潜意识里，柳智敏才是当之无愧的五女一！你被她如CG般完美的建模脸和强大的舞台气场深深吸引。你欣赏那种打破次元壁的惊艳感，以及外表高冷内心可爱的反差萌。对你来说，她就是K-pop新纪元的女神。",
+          image: "https://s3.imagency.cn/e/33125f692ea70abfd8dfaf64161f3e06.jpg", // Karina
+          quote: "高阶风骨，清冷绝尘，岂容甜俗争锋"
+        };
+      } else if (wonyoungScore > karinaScore + 1) {
+        return {
+          level: "张元英 (Wonyoung)",
+          description: "在你潜意识里，张元英才是当之无愧的五女一！你无法抗拒她天生爱豆的魅力和极致的自我管理。你欣赏她那种时刻保持完美、自信闪耀的姿态。对你来说，她就是“天生偶像”的代名词，是永远的C位。",
+          image: "https://s3.imagency.cn/e/414019493311c33c28d62dc34b1d0736.jpg", // Wonyoung
+          quote: "天生爱豆，元气倾世，冷傲不过虚浮"
+        };
+      } else {
+        return {
+          level: "绝代双骄",
+          description: "彩蛋触发，你竟是百里挑一的端水大师！在你心中，柳智敏和张元英平分秋色。你既欣赏Karina的建模神颜和帅气，也沉迷于Wonyoung的千金氛围和甜美。你是人群中少有的同时欣赏两种美的审美专家。小孩子才做选择，你全都要！",
+          image: "https://s3.imagency.cn/e/7b268db14d467b127b30c5a725b7ed2c.jpeg", // Both
+          quote: "双姝并立，清冷灵动，皆为绝色风华"
+        };
+      }
     },
   },
 ];

@@ -32,7 +32,7 @@ export function Hero({ onStart }: HeroProps) {
         <div className="pt-4">
           <button 
             onClick={onStart}
-            className="group relative inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 text-white rounded-full text-lg font-bold hover:bg-neutral-800 transition-all hover:pr-10 shadow-xl shadow-neutral-200 hover:shadow-2xl hover:-translate-y-1"
+            className="group relative inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 !text-white rounded-full text-lg font-bold hover:bg-neutral-800 transition-all hover:pr-10 shadow-xl shadow-neutral-200 hover:shadow-2xl hover:-translate-y-1 z-10"
           >
             {t('hero.button')}
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

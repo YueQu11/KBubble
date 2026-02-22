@@ -35,13 +35,19 @@ export function ResultCard({ test, answers, onRetry, onHome }: ResultCardProps) 
         <div className="p-8 md:p-14">
           <div className="mb-8">
             <span className="inline-block px-5 py-2 rounded-full bg-neutral-900 text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-neutral-200">
-              {t('result.label')}
+              {test.resultLabel || t('result.label')}
             </span>
           </div>
 
           <h2 className="font-sans font-black text-4xl md:text-6xl text-neutral-900 mb-8 tracking-tight">
             {result.level}
           </h2>
+
+          {result.quote && (
+            <p className="text-neutral-400 text-lg italic mb-8">
+              "{result.quote}"
+            </p>
+          )}
 
           <div className="w-20 h-1.5 bg-gradient-to-r from-pink-400 to-rose-500 mx-auto mb-10 rounded-full" />
 

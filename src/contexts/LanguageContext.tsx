@@ -14,7 +14,7 @@ const translations = {
     'nav.about': '关于我们',
     'nav.resources': '更多好玩',
     'nav.start': '开始探索',
-    'hero.tag': '✨时尚者的自我探索指南',
+    'hero.tag': '✨时尚潮流圈的自我探索指南',
     'hero.title.1': '心之所隐，',
     'hero.title.2': ' 皆为答案',
     'hero.desc': '',
@@ -36,7 +36,7 @@ const translations = {
     'result.retry': '再测一次',
     'result.home': '更多测试',
     'result.disclaimer': '测试结果仅供娱乐参考，保持开心最重要！',
-    'footer.rights': '© 2024 InnerSpace. All rights reserved.',
+    'footer.rights': '© 2026 KBubble. All rights reserved.',
   }
 };
 
