@@ -151,7 +151,7 @@ export function KeyVerificationModal({
               
               <div className="bg-neutral-50 px-8 py-4 text-center border-t border-neutral-100">
                 <p className="text-xs text-neutral-400">
-                  还没有密钥？请访问我们的主页获取。
+                  还没有密钥？小红书搜索“KBubble测评”获取。
                 </p>
               </div>
             </motion.div>

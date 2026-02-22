@@ -31,7 +31,10 @@ export function TestCard({ test, onSelect, index }: TestCardProps): JSX.Element 
       )}
       
       <div className="p-8 flex flex-col flex-grow">
-        <h3 className="font-sans text-2xl font-bold text-neutral-800 mb-3 group-hover:text-pink-500 transition-colors">
+        <h3 
+          onClick={() => onSelect(test.id)}
+          className="font-sans text-2xl font-bold text-neutral-800 mb-3 group-hover:text-pink-500 transition-colors cursor-pointer"
+        >
           {test.title}
         </h3>
         
