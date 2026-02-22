@@ -65,7 +65,7 @@ export function ResultCard({ test, answers, onRetry, onHome }: ResultCardProps) 
             </button>
             <button 
               onClick={onHome}
-              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-neutral-900 text-white hover:bg-neutral-800 font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-neutral-900 !text-white hover:bg-neutral-800 font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               <Home size={18} />
               {t('result.home')}

@@ -76,7 +76,7 @@ export function TestIntro({ test, onStart, onBack }: TestIntroProps) {
 
           <button 
             onClick={onStart}
-            className="w-full py-5 bg-neutral-900 text-white rounded-2xl text-lg font-bold hover:bg-neutral-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2"
+            className="w-full py-5 bg-neutral-900 !text-white rounded-2xl text-lg font-bold hover:bg-neutral-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2"
           >
             {t('intro.start')}
             <ArrowRight size={20} />
