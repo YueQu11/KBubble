@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Key, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { verifyKey } from "../data/keys";
 
 interface KeyVerificationModalProps {
   isOpen: boolean;
@@ -31,32 +32,22 @@ export function KeyVerificationModal({
     setIsLoading(true);
     setError(null);
 
-    try {
-      const response = await fetch("/api/verify-key", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ testId, key: key.trim() }),
-      });
+    // Simulate network delay for better UX
+    setTimeout(() => {
+      const isValid = verifyKey(testId, key);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Verification failed");
+      if (isValid) {
+        setSuccess(true);
+        setTimeout(() => {
+          onVerified();
+          setKey("");
+          setSuccess(false);
+        }, 1500);
+      } else {
+        setError("无效的密钥 (Invalid key)");
       }
-
-      setSuccess(true);
-      setTimeout(() => {
-        onVerified();
-        setKey("");
-        setSuccess(false);
-      }, 1500);
-    } catch (err: any) {
-      setError("无效的密钥 (Invalid key)");
-    } finally {
       setIsLoading(false);
-    }
+    }, 600);
   };
 
   return (
