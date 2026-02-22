@@ -34,7 +34,9 @@ export function KeyVerificationModal({
 
     // Simulate network delay for better UX
     setTimeout(() => {
-      const isValid = verifyKey(testId, key);
+      // Normalize the key before verification
+      const normalizedKey = key.trim();
+      const isValid = verifyKey(testId, normalizedKey);
 
       if (isValid) {
         setSuccess(true);
@@ -44,6 +46,7 @@ export function KeyVerificationModal({
           setSuccess(false);
         }, 1500);
       } else {
+        console.log(`Verification failed for testId: ${testId}, key: ${normalizedKey}`);
         setError("无效的密钥 (Invalid key)");
       }
       setIsLoading(false);
